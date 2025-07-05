@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人間認証テスト</title>
+
+    <!-- Google Fonts (Roboto) の読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- 全てのCSSをここに埋め込みます -->
+    <style>
+        /* CSS変数を定義して、テーマの切り替えを容易にします */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #212529;
+            --container-bg-color: #f8f9fa;
+            --container-border-color: #dee2e6;
+            --success-color: #0f5132;
+            --success-bg-color: #d1e7dd;
+            --success-border-color: #badbcc;
+        }
+
+        /* デバイスがダークモードの場合のカラースキーム */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #212529;
+                --text-color: #e9ecef;
+                --container-bg-color: #343a40;
+                --container-border-color: #495057;
+                --success-color: #75b798;
+                --success-bg-color: #2c3e34;
+                --success-border-color: #3d5245;
+            }
+            
+            /* ダークモード時にreCAPTCHAのテーマも変更 */
+            .g-recaptcha {
+                filter: invert(1) hue-rotate(180deg);
+            }
+        }
+
+        /* 基本的なページスタイル */
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 中央のコンテンツコンテナ */
+        .container {
+            background-color: var(--container-bg-color);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--container-border-color);
+            max-width: 500px;
+            width: 90%;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        /* reCAPTCHAを中央に配置するためのラッパー */
+        #recaptcha-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 成功メッセージのスタイル */
+        #success-message {
+            /* 最初は非表示 */
+            display: none;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            color: var(--success-color);
+            background-color: var(--success-bg-color);
+            border: 1px solid var(--success-border-color);
+        }
+    </style>
+
+    <!-- Google reCAPTCHA APIスクリプトの読み込み -->
+    <!-- `async defer`により、ページの読み込みをブロックしません -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 初期メッセージ -->
+        <div id="initial-message">
+            <h1>人間認証テスト</h1>
+            <p>あなたがロボットではなく、人間であることを下のチェックボックスで証明してください。</p>
+        </div>
+
+        <!-- reCAPTCHAウィジェットのコンテナ -->
+        <div id="recaptcha-container">
+            <!-- 
+                ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+                重要：以下の data-sitekey の値を、
+                あなた自身が取得した reCAPTCHA v2 サイトキーに置き換えてください。
+                ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+            -->
+            <div class="g-recaptcha" 
+                 data-sitekey="ここにあなたのサイトキーを貼り付けてください"
+                 data-callback="onRecaptchaSuccess">
+            </div>
+            <!-- テスト用にGoogleが提供しているサイトキー: 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI -->
+        </div>
+
+        <!-- 認証成功後に表示されるメッセージ -->
+        <div id="success-message">
+            <h1>おめでとうございます。あなたは人間です。</h1>
+            <p style="margin-bottom: 0;">ご安心ください。あなたはテストを突破したことにより、人間だと証明されました。</p>
+        </div>
+    </div>
+
+    <!-- 全てのJavaScriptをここに埋め込みます -->
+    <script>
+        /**
+         * reCAPTCHAの認証が成功したときに呼び出されるコールバック関数です。
+         * GoogleのAPIから自動的に呼び出されます。
+         * @param {string} token - 認証トークン（このサンプルでは使用しません）
+         */
+        function onRecaptchaSuccess(token) {
+            // デバッグ用にコンソールにメッセージを表示
+            console.log('reCAPTCHA認証に成功しました。トークン:', token);
+
+            // 初期メッセージとreCAPTCHAを非表示にする
+            document.getElementById('initial-message').style.display = 'none';
+            document.getElementById('recaptcha-container').style.display = 'none';
+
+            // 成功メッセージを表示する
+            document.getElementById('success-message').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
